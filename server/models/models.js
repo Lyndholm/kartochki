@@ -1,45 +1,80 @@
 const sequelize = require('../db');
 const { DataTypes } = require('sequelize');
 
-const User = sequelize.define('user', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    username: { type: DataTypes.STRING, unique: true },
-    password: { type: DataTypes.STRING },
-    email: { type: DataTypes.STRING, unique: true },
+
+const User = sequelize.define('User', {
+    username: {
+        type: DataTypes.STRING,
+        unique: true,
+    },
+    password: DataTypes.STRING,
+    email: {
+        type: DataTypes.STRING,
+        unique: true,
+    },
+    description: DataTypes.STRING,
 });
 
-const CardGroup = sequelize.define('cardGroup', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: { type: DataTypes.STRING },
-    subject: { type: DataTypes.STRING },
-    topic: { type: DataTypes.STRING },
-    ownerId: { type: DataTypes.INTEGER }, // ID владельца группы
+
+const Card = sequelize.define('Card', {
+    question: DataTypes.STRING,
+    answer: DataTypes.STRING,
 });
 
-const Card = sequelize.define('card', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    question: { type: DataTypes.STRING },
-    answer: { type: DataTypes.STRING },
-    status: { type: DataTypes.STRING },
-    groupId: { type: DataTypes.INTEGER }, // ID группы карточек
+
+const Subject = sequelize.define('Subject', {
+    name: DataTypes.STRING,
 });
 
-const UserCardGroups = sequelize.define('userCardGroups', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+
+const Collection = sequelize.define('Collection', {
+    topic: DataTypes.STRING,
+    description: {
+        type: DataTypes.STRING,
+        defaultValue: 'Без описания',
+    },
 });
 
-User.hasMany(CardGroup, { foreignKey: 'ownerId' });
-CardGroup.belongsTo(User, { foreignKey: 'ownerId' });
+const UserCardStatus = sequelize.define('UserCardStatus', {
+    status: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+});
 
-CardGroup.hasMany(Card);
-Card.belongsTo(CardGroup);
 
-User.belongsToMany(CardGroup, { through: UserCardGroups });
-CardGroup.belongsToMany(User, { through: UserCardGroups });
+User.hasMany(Collection, { foreignKey: 'author' });
+Collection.belongsTo(User, { foreignKey: 'author' });
+
+Collection.belongsTo(Subject, { foreignKey: 'subject' });
+Subject.hasMany(Collection, { foreignKey: 'subject' });
+
+User.belongsToMany(Collection, { through: 'FavoriteCollections' });
+Collection.belongsToMany(User, { through: 'FavoriteCollections' });
+
+User.belongsToMany(Card, {
+    through: {
+        model: 'UserCardStatus',
+        unique: true,
+    },
+    foreignKey: 'userId',
+    otherKey: 'cardId',
+});
+
+Card.belongsToMany(User, {
+    through: {
+        model: 'UserCardStatus',
+        unique: true,
+    },
+    foreignKey: 'cardId',
+    otherKey: 'userId',
+});
 
 module.exports = {
     User,
-    CardGroup,
     Card,
-    UserCardGroups,
+    Subject,
+    Collection,
+    UserCardStatus,
+    FavoriteCollections: sequelize.models.FavoriteCollections,
 };
