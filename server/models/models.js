@@ -23,7 +23,10 @@ const Card = sequelize.define('Card', {
 
 
 const Subject = sequelize.define('Subject', {
-    name: DataTypes.STRING,
+    name: {
+        type: DataTypes.STRING,
+        unique: true,
+    }
 });
 
 
