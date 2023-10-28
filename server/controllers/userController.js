@@ -44,7 +44,7 @@ class UserController {
             }
             const isPasswordValid = await bcrypt.compare(password, user.password);
             if (!isPasswordValid) {
-                return next(ApiError.unauthorized('Указан неверный пароль'));
+                return next(ApiError.badRequest('Указан неверный пароль'));
             }
             const token = generateJwt(user.id, user.email, user.username);
             return res.json({ token });

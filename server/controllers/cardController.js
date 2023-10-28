@@ -10,7 +10,7 @@ class cardController {
 
             return res.json(card)
         } catch (e) {
-            next(ApiError.badRequest(e.message))
+            next(ApiError.internal(e.message))
         }
 
     }
