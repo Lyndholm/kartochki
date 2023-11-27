@@ -31,7 +31,10 @@ const Subject = sequelize.define('Subject', {
 
 
 const Collection = sequelize.define('Collection', {
-    topic: DataTypes.STRING,
+    name: {
+        type: DataTypes.STRING,
+        unique: true,
+    },
     description: {
         type: DataTypes.STRING,
         defaultValue: 'Без описания',
@@ -46,11 +49,17 @@ const UserCardStatus = sequelize.define('UserCardStatus', {
 });
 
 
+User.hasMany(Card, { foreignKey: 'author' });
+Card.belongsTo(User, { foreignKey: 'author' });
+
 User.hasMany(Collection, { foreignKey: 'author' });
 Collection.belongsTo(User, { foreignKey: 'author' });
 
 Collection.belongsTo(Subject, { foreignKey: 'subject' });
 Subject.hasMany(Collection, { foreignKey: 'subject' });
+
+Collection.hasMany(Card, { foreignKey: 'collectionId' });
+Card.belongsTo(Collection, { foreignKey: 'collectionId' });
 
 User.belongsToMany(Collection, { through: 'FavoriteCollections' });
 Collection.belongsToMany(User, { through: 'FavoriteCollections' });
