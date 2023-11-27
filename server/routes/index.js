@@ -1,14 +1,15 @@
-const Router = require('express')
-const router = new Router()
-const userRouter = require('./userRouter')
-const subjectRouter = require('./subjectRouter')
-const cardRouter = require('./cardRouter')
-const cardGroupRouter = require('./cardGroupRouter')
+const { Router } = require('express');
 
-router.use('/user', userRouter)
-router.use('/subject', subjectRouter)
-router.use('/card', cardRouter)
-router.use('/cardgroup', cardGroupRouter)
+const router = new Router();
 
+const userRoutes = require('./userRoutes')
+const subjectRoutes = require('./subjectRoutes')
+const cardRoutes = require('./cardRoutes')
+const collectionRoutes = require('./collectionRoutes')
+
+router.use('/collections', collectionRoutes);
+router.use('/cards', cardRoutes);
+router.use('/subjects', subjectRoutes);
+router.use('/users', userRoutes);
 
 module.exports = router
